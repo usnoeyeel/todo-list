@@ -4,6 +4,17 @@ let currentTab = 'all';
 let currentGroup = null; // null = 전체 그룹
 let expandedTodos = new Set();
 
+const GROUP_COLORS = [
+  { bg: '#eff6ff', text: '#2563eb', border: '#bfdbfe' }, // 파랑
+  { bg: '#f0fdf4', text: '#16a34a', border: '#bbf7d0' }, // 초록
+  { bg: '#fff7ed', text: '#ea580c', border: '#fed7aa' }, // 주황
+  { bg: '#fdf4ff', text: '#9333ea', border: '#e9d5ff' }, // 보라
+  { bg: '#fff1f2', text: '#e11d48', border: '#fecdd3' }, // 빨강
+  { bg: '#f0fdfa', text: '#0d9488', border: '#99f6e4' }, // 청록
+  { bg: '#fefce8', text: '#ca8a04', border: '#fde68a' }, // 노랑
+  { bg: '#fdf2f8', text: '#db2777', border: '#fbcfe8' }, // 분홍
+];
+
 // ── Group ───────────────────────────────────────────────
 
 function addGroup() {
@@ -11,7 +22,8 @@ function addGroup() {
   const name = input.value.trim();
   if (!name) return;
   if (groups.find(g => g.name === name)) return;
-  groups.push({ id: Date.now(), name });
+  const colorIndex = groups.length % GROUP_COLORS.length;
+  groups.push({ id: Date.now(), name, colorIndex });
   input.value = '';
   renderGroups();
   render();
@@ -29,10 +41,9 @@ function deleteGroup(id) {
   render();
 }
 
-function switchGroup(groupId, btn) {
+function switchGroup(groupId) {
   currentGroup = groupId;
-  document.querySelectorAll('.group-tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  renderGroups();
   render();
 }
 
@@ -42,12 +53,14 @@ function renderGroups() {
   if (groups.length === 0) {
     chips.innerHTML = '<span class="no-groups">아직 그룹이 없습니다.</span>';
   } else {
-    chips.innerHTML = groups.map(g => `
-      <span class="group-chip">
-        ${escapeHtml(g.name)}
-        <button class="chip-delete" onclick="deleteGroup(${g.id})">×</button>
-      </span>
-    `).join('');
+    chips.innerHTML = groups.map(g => {
+      const c = GROUP_COLORS[g.colorIndex];
+      return `
+        <span class="group-chip" style="background:${c.bg};color:${c.text};border-color:${c.border}">
+          ${escapeHtml(g.name)}
+          <button class="chip-delete" onclick="deleteGroup(${g.id})" style="color:${c.border}">×</button>
+        </span>`;
+    }).join('');
   }
 
   // 그룹 select
@@ -62,10 +75,15 @@ function renderGroups() {
     return;
   }
   row.innerHTML =
-    `<button class="group-tab-btn ${currentGroup === null ? 'active' : ''}" onclick="switchGroup(null, this)">전체</button>` +
-    groups.map(g =>
-      `<button class="group-tab-btn ${currentGroup === g.id ? 'active' : ''}" onclick="switchGroup(${g.id}, this)">${escapeHtml(g.name)}</button>`
-    ).join('');
+    `<button class="group-tab-btn ${currentGroup === null ? 'active' : ''}" onclick="switchGroup(null)">전체</button>` +
+    groups.map(g => {
+      const c = GROUP_COLORS[g.colorIndex];
+      const isActive = currentGroup === g.id;
+      const style = isActive
+        ? `background:${c.text};color:#fff;border-color:${c.text}`
+        : `background:#fff;color:${c.text};border-color:${c.border}`;
+      return `<button class="group-tab-btn" onclick="switchGroup(${g.id})" style="${style}">${escapeHtml(g.name)}</button>`;
+    }).join('');
 }
 
 // ── Todo ────────────────────────────────────────────────
@@ -135,7 +153,13 @@ function getGroupName(groupId) {
 function renderTodoItem(todo) {
   const isExpanded = expandedTodos.has(todo.id);
   const hasDesc = !!todo.description;
-  const groupName = currentGroup === null ? getGroupName(todo.groupId) : null;
+  const group = currentGroup === null ? groups.find(g => g.id === todo.groupId) : null;
+
+  let badgeHtml = '';
+  if (group) {
+    const c = GROUP_COLORS[group.colorIndex];
+    badgeHtml = `<span class="todo-group-badge" style="background:${c.bg};color:${c.text}">${escapeHtml(group.name)}</span>`;
+  }
 
   return `
     <li class="todo-item ${todo.done ? 'done' : ''}">
@@ -143,7 +167,7 @@ function renderTodoItem(todo) {
       <div class="todo-content"${hasDesc ? ` onclick="toggleDescription(${todo.id})"` : ''} style="${hasDesc ? 'cursor:pointer' : ''}">
         <div class="todo-main">
           <span class="todo-text">${escapeHtml(todo.text)}</span>
-          ${groupName ? `<span class="todo-group-badge">${escapeHtml(groupName)}</span>` : ''}
+          ${badgeHtml}
           ${hasDesc ? `<span class="desc-toggle">${isExpanded ? '▲' : '▼'}</span>` : ''}
         </div>
         ${todo.done && todo.completedAt ? `<span class="todo-completed-at">완료: ${formatDate(todo.completedAt)}</span>` : ''}
