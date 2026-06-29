@@ -209,16 +209,8 @@ h1 {
   background: #1d4ed8;
 }
 
-/* ── Tab Control Row ── */
-.tab-control-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 28px 16px;
-}
-
+/* ── Tabs ── */
 .tabs {
-  flex: 1;
   display: flex;
   gap: 4px;
   background: #f0f2f5;
@@ -226,23 +218,36 @@ h1 {
   padding: 4px;
 }
 
-.group-view-btn {
-  padding: 8px 12px;
-  background: #fff;
-  color: #888;
-  border: 1.5px solid #dde1e7;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
+.group-tabs-row {
+  display: flex;
+  gap: 6px;
+  padding: 0 28px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
-.group-view-btn.active {
-  background: #eff6ff;
+.group-tab-btn {
+  padding: 5px 14px;
+  border: 1.5px solid #dde1e7;
+  border-radius: 20px;
+  background: #fff;
+  color: #888;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.group-tab-btn.active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+.group-tab-btn:not(.active):hover {
+  border-color: #93c5fd;
   color: #2563eb;
-  border-color: #bfdbfe;
 }
 
 .tab-btn {

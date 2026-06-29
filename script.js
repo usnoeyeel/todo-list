@@ -1,7 +1,7 @@
 let todos = [];
 let groups = [];
 let currentTab = 'all';
-let groupViewEnabled = false;
+let currentGroup = null; // null = 전체 그룹
 let expandedTodos = new Set();
 
 // ── Group ───────────────────────────────────────────────
@@ -14,6 +14,7 @@ function addGroup() {
   groups.push({ id: Date.now(), name });
   input.value = '';
   renderGroups();
+  render();
 }
 
 document.getElementById('groupInput').addEventListener('keydown', function(e) {
@@ -23,11 +24,20 @@ document.getElementById('groupInput').addEventListener('keydown', function(e) {
 function deleteGroup(id) {
   groups = groups.filter(g => g.id !== id);
   todos = todos.map(t => t.groupId === id ? { ...t, groupId: null } : t);
+  if (currentGroup === id) currentGroup = null;
   renderGroups();
   render();
 }
 
+function switchGroup(groupId, btn) {
+  currentGroup = groupId;
+  document.querySelectorAll('.group-tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
 function renderGroups() {
+  // 그룹 칩
   const chips = document.getElementById('groupChips');
   if (groups.length === 0) {
     chips.innerHTML = '<span class="no-groups">아직 그룹이 없습니다.</span>';
@@ -40,9 +50,22 @@ function renderGroups() {
     `).join('');
   }
 
+  // 그룹 select
   const select = document.getElementById('todoGroup');
   select.innerHTML = '<option value="">그룹 없음</option>' +
     groups.map(g => `<option value="${g.id}">${escapeHtml(g.name)}</option>`).join('');
+
+  // 그룹 탭
+  const row = document.getElementById('groupTabsRow');
+  if (groups.length === 0) {
+    row.innerHTML = '';
+    return;
+  }
+  row.innerHTML =
+    `<button class="group-tab-btn ${currentGroup === null ? 'active' : ''}" onclick="switchGroup(null, this)">전체</button>` +
+    groups.map(g =>
+      `<button class="group-tab-btn ${currentGroup === g.id ? 'active' : ''}" onclick="switchGroup(${g.id}, this)">${escapeHtml(g.name)}</button>`
+    ).join('');
 }
 
 // ── Todo ────────────────────────────────────────────────
@@ -91,12 +114,6 @@ function switchTab(tab, btn) {
   render();
 }
 
-function toggleGroupView() {
-  groupViewEnabled = !groupViewEnabled;
-  document.getElementById('groupViewBtn').classList.toggle('active', groupViewEnabled);
-  render();
-}
-
 function deleteCompleted() {
   todos = todos.filter(t => !t.done);
   render();
@@ -115,10 +132,10 @@ function getGroupName(groupId) {
   return g ? g.name : null;
 }
 
-function renderTodoItem(todo, showGroupBadge) {
+function renderTodoItem(todo) {
   const isExpanded = expandedTodos.has(todo.id);
   const hasDesc = !!todo.description;
-  const groupName = showGroupBadge ? getGroupName(todo.groupId) : null;
+  const groupName = currentGroup === null ? getGroupName(todo.groupId) : null;
 
   return `
     <li class="todo-item ${todo.done ? 'done' : ''}">
@@ -147,32 +164,16 @@ function render() {
   else if (currentTab === 'active') filtered = todos.filter(t => !t.done);
   else filtered = todos.filter(t => t.done);
 
+  if (currentGroup !== null) {
+    filtered = filtered.filter(t => t.groupId === currentGroup);
+  }
+
   if (filtered.length === 0) {
     list.innerHTML = '<li class="empty-msg">항목이 없습니다.</li>';
     return;
   }
 
-  if (groupViewEnabled) {
-    const sections = [];
-    groups.forEach(g => {
-      const items = filtered.filter(t => t.groupId === g.id);
-      if (items.length) sections.push({ name: g.name, items });
-    });
-    const ungrouped = filtered.filter(t => !t.groupId);
-    if (ungrouped.length) sections.push({ name: '미분류', items: ungrouped });
-
-    if (sections.length === 0) {
-      list.innerHTML = '<li class="empty-msg">항목이 없습니다.</li>';
-      return;
-    }
-
-    list.innerHTML = sections.map(sec => `
-      <li class="group-section-header">${escapeHtml(sec.name)}</li>
-      ${sec.items.map(t => renderTodoItem(t, false)).join('')}
-    `).join('');
-  } else {
-    list.innerHTML = filtered.map(t => renderTodoItem(t, true)).join('');
-  }
+  list.innerHTML = filtered.map(renderTodoItem).join('');
 }
 
 function escapeHtml(text) {

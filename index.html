@@ -33,14 +33,13 @@
       </select>
     </div>
 
-    <div class="tab-control-row">
-      <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('all', this)">전체</button>
-        <button class="tab-btn" onclick="switchTab('active', this)">진행중</button>
-        <button class="tab-btn" onclick="switchTab('done', this)">완료</button>
-      </div>
-      <button class="group-view-btn" id="groupViewBtn" onclick="toggleGroupView()">그룹별 보기</button>
+    <div class="tabs" style="margin: 0 28px 8px;">
+      <button class="tab-btn active" onclick="switchTab('all', this)">전체</button>
+      <button class="tab-btn" onclick="switchTab('active', this)">진행중</button>
+      <button class="tab-btn" onclick="switchTab('done', this)">완료</button>
     </div>
+
+    <div class="group-tabs-row" id="groupTabsRow"></div>
 
     <ul class="todo-list" id="todoList"></ul>
 
