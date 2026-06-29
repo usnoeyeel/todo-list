@@ -26,11 +26,15 @@
       <button onclick="addTodo()">추가</button>
     </div>
 
-    <div class="input-extras">
-      <textarea id="todoDesc" placeholder="설명 (선택사항)" rows="2"></textarea>
+    <div class="input-sub-row">
+      <button class="desc-add-btn" id="descAddBtn" onclick="toggleDescInput()">+ 설명 추가</button>
       <select id="todoGroup">
         <option value="">그룹 없음</option>
       </select>
+    </div>
+
+    <div class="desc-input-area" id="descInputArea">
+      <textarea id="todoDesc" placeholder="설명을 입력하세요" rows="2"></textarea>
     </div>
 
     <div class="tabs" style="margin: 0 28px 8px;">

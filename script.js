@@ -89,6 +89,25 @@ function renderGroups() {
 
 // ── Todo ────────────────────────────────────────────────
 
+function toggleDescInput() {
+  const area = document.getElementById('descInputArea');
+  const btn = document.getElementById('descAddBtn');
+  const opening = !area.classList.contains('visible');
+  area.classList.toggle('visible', opening);
+  btn.classList.toggle('active', opening);
+  btn.textContent = opening ? '− 설명 접기' : '+ 설명 추가';
+  if (!opening) document.getElementById('todoDesc').value = '';
+}
+
+function collapseDescInput() {
+  const area = document.getElementById('descInputArea');
+  const btn = document.getElementById('descAddBtn');
+  area.classList.remove('visible');
+  btn.classList.remove('active');
+  btn.textContent = '+ 설명 추가';
+  document.getElementById('todoDesc').value = '';
+}
+
 function addTodo() {
   const input = document.getElementById('todoInput');
   const text = input.value.trim();
@@ -100,7 +119,7 @@ function addTodo() {
 
   todos.push({ id: Date.now(), text, description: desc, groupId, done: false, completedAt: null });
   input.value = '';
-  document.getElementById('todoDesc').value = '';
+  collapseDescInput();
   render();
 }
 

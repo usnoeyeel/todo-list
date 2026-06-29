@@ -136,32 +136,40 @@ h1 {
   padding: 0 28px;
 }
 
-.input-extras {
+.input-sub-row {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
   padding: 0 28px;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 
-.input-extras textarea {
-  flex: 1;
-  padding: 8px 12px;
-  border: 1.5px solid #dde1e7;
-  border-radius: 8px;
-  font-size: 0.88rem;
-  font-family: inherit;
-  color: #555;
-  resize: none;
-  outline: none;
-  transition: border-color 0.2s;
+.desc-add-btn {
+  padding: 4px 12px;
+  background: none;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 6px;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.input-extras textarea:focus {
+.desc-add-btn:hover {
+  border-color: #93c5fd;
+  color: #2563eb;
+}
+
+.desc-add-btn.active {
+  border-style: solid;
   border-color: #2563eb;
+  color: #2563eb;
+  background: #eff6ff;
 }
 
-.input-extras select {
-  padding: 8px 10px;
+.input-sub-row select {
+  padding: 6px 10px;
   border: 1.5px solid #dde1e7;
   border-radius: 8px;
   font-size: 0.88rem;
@@ -173,7 +181,34 @@ h1 {
   transition: border-color 0.2s;
 }
 
-.input-extras select:focus {
+.input-sub-row select:focus {
+  border-color: #2563eb;
+}
+
+.desc-input-area {
+  display: none;
+  padding: 0 28px;
+  margin-bottom: 16px;
+}
+
+.desc-input-area.visible {
+  display: block;
+}
+
+.desc-input-area textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1.5px solid #dde1e7;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: #555;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.desc-input-area textarea:focus {
   border-color: #2563eb;
 }
 
