@@ -134,6 +134,24 @@ h1 {
   background: #f8f9ff;
 }
 
+.todo-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.todo-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.todo-completed-at {
+  display: block;
+  font-size: 0.75rem;
+  color: #aaa;
+  margin-top: 2px;
+}
+
 .todo-item input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
@@ -166,7 +184,6 @@ h1 {
 }
 
 .todo-item .todo-text {
-  flex: 1;
   font-size: 0.97rem;
   color: #333;
   transition: color 0.2s, text-decoration 0.2s;

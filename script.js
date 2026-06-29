@@ -6,7 +6,7 @@ function addTodo() {
   const text = input.value.trim();
   if (!text) return;
 
-  todos.push({ id: Date.now(), text, done: false });
+  todos.push({ id: Date.now(), text, done: false, completedAt: null });
   input.value = '';
   render();
 }
@@ -17,7 +17,10 @@ document.getElementById('todoInput').addEventListener('keydown', function(e) {
 
 function toggleDone(id) {
   const todo = todos.find(t => t.id === id);
-  if (todo) todo.done = !todo.done;
+  if (todo) {
+    todo.done = !todo.done;
+    todo.completedAt = todo.done ? new Date().toISOString() : null;
+  }
   render();
 }
 
@@ -31,6 +34,12 @@ function switchTab(tab, btn) {
 function deleteCompleted() {
   todos = todos.filter(t => !t.done);
   render();
+}
+
+function formatDate(iso) {
+  const d = new Date(iso);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
 function render() {
@@ -52,7 +61,12 @@ function render() {
   list.innerHTML = filtered.map(todo => `
     <li class="todo-item ${todo.done ? 'done' : ''}">
       <input type="checkbox" ${todo.done ? 'checked' : ''} onchange="toggleDone(${todo.id})" />
-      <span class="todo-text">${escapeHtml(todo.text)}</span>
+      <div class="todo-content">
+        <div class="todo-main">
+          <span class="todo-text">${escapeHtml(todo.text)}</span>
+        </div>
+        ${todo.done && todo.completedAt ? `<span class="todo-completed-at">완료: ${formatDate(todo.completedAt)}</span>` : ''}
+      </div>
     </li>
   `).join('');
 }
