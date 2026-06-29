@@ -1,8 +1,9 @@
 let todos = [];
 let groups = [];
 let currentTab = 'all';
-let currentGroup = null; // null = 전체 그룹
+let currentGroup = null;
 let expandedTodos = new Set();
+let editingGroupTodo = null;
 
 const GROUP_COLORS = [
   { bg: '#eff6ff', text: '#2563eb', border: '#bfdbfe' }, // 파랑
@@ -132,6 +133,29 @@ function switchTab(tab, btn) {
   render();
 }
 
+function startEditGroup(todoId) {
+  editingGroupTodo = todoId;
+  render();
+  setTimeout(() => {
+    const sel = document.querySelector('.todo-group-select');
+    if (sel) sel.focus();
+  }, 0);
+}
+
+function assignGroup(todoId, groupIdRaw) {
+  const todo = todos.find(t => t.id === todoId);
+  if (todo) todo.groupId = groupIdRaw ? Number(groupIdRaw) : null;
+  editingGroupTodo = null;
+  render();
+}
+
+function cancelEditGroup() {
+  if (editingGroupTodo !== null) {
+    editingGroupTodo = null;
+    render();
+  }
+}
+
 function deleteCompleted() {
   todos = todos.filter(t => !t.done);
   render();
@@ -156,9 +180,15 @@ function renderTodoItem(todo) {
   const group = currentGroup === null ? groups.find(g => g.id === todo.groupId) : null;
 
   let badgeHtml = '';
-  if (group) {
+  if (editingGroupTodo === todo.id) {
+    const opts = `<option value="" ${!todo.groupId ? 'selected' : ''}>그룹 없음</option>` +
+      groups.map(g => `<option value="${g.id}" ${todo.groupId === g.id ? 'selected' : ''}>${escapeHtml(g.name)}</option>`).join('');
+    badgeHtml = `<select class="todo-group-select" onchange="assignGroup(${todo.id},this.value)" onblur="cancelEditGroup()" onclick="event.stopPropagation()">${opts}</select>`;
+  } else if (group) {
     const c = GROUP_COLORS[group.colorIndex];
-    badgeHtml = `<span class="todo-group-badge" style="background:${c.bg};color:${c.text}">${escapeHtml(group.name)}</span>`;
+    badgeHtml = `<span class="todo-group-badge" style="background:${c.bg};color:${c.text};cursor:pointer" title="그룹 변경" onclick="event.stopPropagation();startEditGroup(${todo.id})">${escapeHtml(group.name)}</span>`;
+  } else if (groups.length > 0) {
+    badgeHtml = `<span class="todo-group-unset" onclick="event.stopPropagation();startEditGroup(${todo.id})">+ 그룹</span>`;
   }
 
   return `
