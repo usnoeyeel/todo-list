@@ -43,6 +43,92 @@ h1 {
   color: rgba(255,255,255,0.75);
 }
 
+/* ── Group Manager ── */
+.group-manager {
+  padding: 0 28px 16px;
+  border-bottom: 1px solid #f0f2f5;
+  margin-bottom: 16px;
+}
+
+.group-input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.group-input-row input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1.5px solid #dde1e7;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.2s;
+  color: #333;
+}
+
+.group-input-row input:focus {
+  border-color: #2563eb;
+}
+
+.group-input-row button {
+  padding: 8px 14px;
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1.5px solid #bfdbfe;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.group-input-row button:hover {
+  background: #dbeafe;
+}
+
+.group-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 24px;
+}
+
+.group-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.chip-delete {
+  background: none;
+  border: none;
+  color: #93c5fd;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0 0 0 2px;
+  transition: color 0.15s;
+}
+
+.chip-delete:hover {
+  color: #2563eb;
+}
+
+.no-groups {
+  font-size: 0.83rem;
+  color: #bbb;
+}
+
+/* ── Input Area ── */
 .input-row {
   display: flex;
   gap: 8px;
@@ -51,12 +137,14 @@ h1 {
 }
 
 .input-extras {
+  display: flex;
+  gap: 8px;
   padding: 0 28px;
   margin-bottom: 20px;
 }
 
 .input-extras textarea {
-  width: 100%;
+  flex: 1;
   padding: 8px 12px;
   border: 1.5px solid #dde1e7;
   border-radius: 8px;
@@ -69,6 +157,23 @@ h1 {
 }
 
 .input-extras textarea:focus {
+  border-color: #2563eb;
+}
+
+.input-extras select {
+  padding: 8px 10px;
+  border: 1.5px solid #dde1e7;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  outline: none;
+  color: #555;
+  background: #fff;
+  cursor: pointer;
+  min-width: 100px;
+  transition: border-color 0.2s;
+}
+
+.input-extras select:focus {
   border-color: #2563eb;
 }
 
@@ -104,13 +209,40 @@ h1 {
   background: #1d4ed8;
 }
 
+/* ── Tab Control Row ── */
+.tab-control-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 28px 16px;
+}
+
 .tabs {
+  flex: 1;
   display: flex;
   gap: 4px;
-  margin: 0 28px 16px;
   background: #f0f2f5;
   border-radius: 10px;
   padding: 4px;
+}
+
+.group-view-btn {
+  padding: 8px 12px;
+  background: #fff;
+  color: #888;
+  border: 1.5px solid #dde1e7;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.group-view-btn.active {
+  background: #eff6ff;
+  color: #2563eb;
+  border-color: #bfdbfe;
 }
 
 .tab-btn {
@@ -214,6 +346,32 @@ h1 {
 .todo-item.done .todo-text {
   text-decoration: line-through;
   color: #aaa;
+}
+
+.todo-group-badge {
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  background: #eff6ff;
+  color: #2563eb;
+  border-radius: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.group-section-header {
+  list-style: none;
+  padding: 10px 10px 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #2563eb;
+  letter-spacing: 0.4px;
+  border-bottom: 1.5px solid #dbeafe;
+  margin-top: 10px;
+}
+
+.group-section-header:first-child {
+  margin-top: 0;
 }
 
 .desc-toggle {
