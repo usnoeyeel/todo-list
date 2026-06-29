@@ -1,13 +1,16 @@
 let todos = [];
 let currentTab = 'all';
+let expandedTodos = new Set();
 
 function addTodo() {
   const input = document.getElementById('todoInput');
   const text = input.value.trim();
   if (!text) return;
 
-  todos.push({ id: Date.now(), text, done: false, completedAt: null });
+  const desc = document.getElementById('todoDesc').value.trim();
+  todos.push({ id: Date.now(), text, description: desc, done: false, completedAt: null });
   input.value = '';
+  document.getElementById('todoDesc').value = '';
   render();
 }
 
@@ -20,6 +23,15 @@ function toggleDone(id) {
   if (todo) {
     todo.done = !todo.done;
     todo.completedAt = todo.done ? new Date().toISOString() : null;
+  }
+  render();
+}
+
+function toggleDescription(id) {
+  if (expandedTodos.has(id)) {
+    expandedTodos.delete(id);
+  } else {
+    expandedTodos.add(id);
   }
   render();
 }
@@ -42,6 +54,25 @@ function formatDate(iso) {
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
+function renderTodoItem(todo) {
+  const isExpanded = expandedTodos.has(todo.id);
+  const hasDesc = !!todo.description;
+
+  return `
+    <li class="todo-item ${todo.done ? 'done' : ''}">
+      <input type="checkbox" ${todo.done ? 'checked' : ''} onchange="toggleDone(${todo.id})" />
+      <div class="todo-content" ${hasDesc ? `onclick="toggleDescription(${todo.id})"` : ''} style="${hasDesc ? 'cursor:pointer' : ''}">
+        <div class="todo-main">
+          <span class="todo-text">${escapeHtml(todo.text)}</span>
+          ${hasDesc ? `<span class="desc-toggle">${isExpanded ? '▲' : '▼'}</span>` : ''}
+        </div>
+        ${todo.done && todo.completedAt ? `<span class="todo-completed-at">완료: ${formatDate(todo.completedAt)}</span>` : ''}
+        ${isExpanded && hasDesc ? `<p class="todo-desc">${escapeHtml(todo.description)}</p>` : ''}
+      </div>
+    </li>
+  `;
+}
+
 function render() {
   const list = document.getElementById('todoList');
   const remaining = todos.filter(t => !t.done).length;
@@ -58,17 +89,7 @@ function render() {
     return;
   }
 
-  list.innerHTML = filtered.map(todo => `
-    <li class="todo-item ${todo.done ? 'done' : ''}">
-      <input type="checkbox" ${todo.done ? 'checked' : ''} onchange="toggleDone(${todo.id})" />
-      <div class="todo-content">
-        <div class="todo-main">
-          <span class="todo-text">${escapeHtml(todo.text)}</span>
-        </div>
-        ${todo.done && todo.completedAt ? `<span class="todo-completed-at">완료: ${formatDate(todo.completedAt)}</span>` : ''}
-      </div>
-    </li>
-  `).join('');
+  list.innerHTML = filtered.map(renderTodoItem).join('');
 }
 
 function escapeHtml(text) {
