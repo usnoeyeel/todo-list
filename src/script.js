@@ -1,4 +1,5 @@
 import { supabase } from './supabase-client.js'
+import { showAuthOverlay, hideAuthOverlay } from './auth.js'
 
 let todos = [];
 let groups = [];
@@ -6,6 +7,7 @@ let currentTab = 'all';
 let currentGroup = null;
 let expandedTodos = new Set();
 let editingGroupTodo = null;
+let currentUserId = null;
 
 const GROUP_COLORS = [
   { bg: '#eff6ff', text: '#2563eb', border: '#bfdbfe' },
@@ -18,9 +20,34 @@ const GROUP_COLORS = [
   { bg: '#fdf2f8', text: '#db2777', border: '#fbcfe8' },
 ];
 
-// ── Init ─────────────────────────────────────────────────
+// ── Auth ─────────────────────────────────────────────────
 
-async function init() {
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if (session) {
+    currentUserId = session.user.id
+    document.getElementById('userEmail').textContent = session.user.email
+    hideAuthOverlay()
+    if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+      await loadData()
+    }
+  } else {
+    currentUserId = null
+    todos = []
+    groups = []
+    currentGroup = null
+    showAuthOverlay()
+    renderGroups()
+    render()
+  }
+})
+
+window.handleSignOut = async function () {
+  await supabase.auth.signOut()
+}
+
+// ── Data ─────────────────────────────────────────────────
+
+async function loadData() {
   const [{ data: groupsData, error: gErr }, { data: todosData, error: tErr }] = await Promise.all([
     supabase.from('groups').select('*').order('created_at'),
     supabase.from('todos').select('*').order('created_at'),
@@ -42,8 +69,8 @@ async function init() {
     completedAt: t.completed_at,
   }));
 
-  renderGroups();
-  render();
+  renderGroups()
+  render()
 }
 
 // ── Group ────────────────────────────────────────────────
@@ -57,7 +84,7 @@ async function addGroup() {
   const colorIndex = groups.length % GROUP_COLORS.length;
   const { data, error } = await supabase
     .from('groups')
-    .insert({ name, color_index: colorIndex })
+    .insert({ name, color_index: colorIndex, user_id: currentUserId })
     .select()
     .single();
   if (error) { console.error(error); return; }
@@ -154,7 +181,7 @@ async function addTodo() {
 
   const { data, error } = await supabase
     .from('todos')
-    .insert({ text, description, group_id: groupId, done: false })
+    .insert({ text, description, group_id: groupId, done: false, user_id: currentUserId })
     .select()
     .single();
   if (error) { console.error(error); return; }
@@ -241,7 +268,7 @@ function cancelEditGroup() {
 }
 
 async function deleteCompleted() {
-  const { error } = await supabase.from('todos').delete().eq('done', true);
+  const { error } = await supabase.from('todos').delete().eq('done', true).eq('user_id', currentUserId);
   if (error) { console.error(error); return; }
   todos = todos.filter(t => !t.done);
   render();
@@ -331,6 +358,3 @@ window.startEditGroup = startEditGroup;
 window.assignGroup = assignGroup;
 window.cancelEditGroup = cancelEditGroup;
 window.deleteCompleted = deleteCompleted;
-
-// ── Start ─────────────────────────────────────────────────
-init();

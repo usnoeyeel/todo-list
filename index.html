@@ -7,11 +7,30 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
+  <!-- 인증 오버레이 -->
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-card">
+      <h2>TODO List</h2>
+      <p class="auth-sub">할 일을 관리하세요</p>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="loginTab" onclick="switchAuthTab('login')">로그인</button>
+        <button class="auth-tab" id="signupTab" onclick="switchAuthTab('signup')">회원가입</button>
+      </div>
+      <p class="auth-error" id="authError"></p>
+      <input class="auth-input" type="email" id="authEmail" placeholder="이메일" />
+      <input class="auth-input" type="password" id="authPassword" placeholder="비밀번호 (6자 이상)" />
+      <button class="auth-submit" id="authSubmitBtn" onclick="submitAuth()">로그인</button>
+    </div>
+  </div>
+
   <div class="container">
     <div class="header">
-      <h1>TODO List</h1>
-      <p class="subtitle">오늘 할 일을 정리해보세요.</p>
-      <p class="subtitle">오늘의 할 일을 정리해보세요.</p>
+      <div class="header-top">
+        <h1>TODO List</h1>
+        <button class="logout-btn" onclick="handleSignOut()">로그아웃</button>
+      </div>
+      <p class="subtitle" id="userEmail"></p>
     </div>
 
     <div class="group-manager">
