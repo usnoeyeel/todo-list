@@ -42,7 +42,7 @@ supabase.auth.onAuthStateChange(async (event, session) => {
 })
 
 window.handleSignOut = async function () {
-  await supabase.auth.signOut()
+  await supabase.auth.signOut({ scope: 'local' })
 }
 
 // ── Data ─────────────────────────────────────────────────

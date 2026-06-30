@@ -4,6 +4,10 @@ let authMode = 'login'
 
 export function showAuthOverlay() {
   document.getElementById('authOverlay').style.display = 'flex'
+  document.getElementById('authEmail').value = ''
+  document.getElementById('authPassword').value = ''
+  document.getElementById('authError').textContent = ''
+  window.switchAuthTab('login')
 }
 
 export function hideAuthOverlay() {
